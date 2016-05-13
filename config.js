@@ -8,10 +8,14 @@ module.exports = function() {
     return {
         autoPrefixBrowsers: [
             'last 2 versions',
+            '> 5% in US',
             'ie >= 11',
+            'edge >= 13',
             'and_chr >= 4.4',
-            'ios_saf >= 8.0',
-            'safari >= 8.0'
+            'ios_saf >= 8.4',
+            'safari >= 9',
+            'firefox >= 46',
+            'chrome >= 50'
         ],
         fonts: root + '/_src/fonts/**/*.*',
         handlebars: {

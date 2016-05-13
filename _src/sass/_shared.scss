@@ -1,22 +1,7 @@
-.border {
-  border: solid 1px $site-red;
-}
+//css that is shared across the entire website goes here
 
-.border2 {
-  border: solid 1px $site-blue;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.row {
-  background-color: silver;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.col-medium-2 {
-  margin: 10px 0;
-  background-color: aliceblue;
+a {
+  color: $site-blue;
+  font-weight: bold;
+  text-decoration: none;
 }

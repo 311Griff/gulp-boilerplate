@@ -1,0 +1,47 @@
+@function toPixel($value) {
+  $currentUnit: unit($value);
+  $strippedValue: $value / ($value * 0 + 1);
+
+  @if $currentUnit != 'px' and $currentUnit != "%" {
+    @if (unitless($value)) {
+      $value: $value * 1px;
+    }
+    @else if ($currentUnit == pt) {
+      $value: 0px + ($strippedValue * 1.3333);
+    }
+    @else if ($currentUnit == em) {
+      $value: 0px + ($strippedValue * $global-font-size);
+    }
+    @else if ($currentUnit == rem) {
+      $value: 0px + ($strippedValue * $global-font-size);
+    }
+    @else {
+      @error "#{$currentUnit} is not a supported unit!";
+    }
+  }
+
+  @return $value;
+}
+
+@function em($value, $base: $global-font-size) {
+  $value: toPixel($value);
+
+  @if (unitless($base)) {
+    $base: $base * 1px;
+  }
+
+  @return ($value / $base) * 1em;
+}
+
+@function rem($value, $base: $global-font-size) {
+  $value: toPixel($value);
+
+  @if (unitless($base)) {
+    $base: $base * 1px;
+  } @else {
+    $unit: unit($value);
+    @error "#{$unit} is not a supported for rem conversion";
+  }
+
+  @return ($value / $base) * 1rem;
+}

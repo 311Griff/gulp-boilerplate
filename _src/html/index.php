@@ -4,16 +4,10 @@ body: home
 ---
 {{#extend "base"}}
     {{#content "content"}}
-<section class="container-fluid">
-    <div class="row between-small around-medium text-center">
-        <div class="col-small-4 col-medium-2">
-            <div class="box">Left</div>
-        </div>
-        <div class="col-small-4 col-medium-2">
-            <div class="box">Middle</div>
-        </div>
-        <div class="col-small-12 col-medium-2">
-            <div class="box">Top</div>
+<section class="container test">
+    <div class="row around-sm">
+        <div class="col-sm-4" >
+            <p>Go to <a href="/examples">Examples Page</a></p>
         </div>
     </div>
 </section>

@@ -1,7 +1,13 @@
 $site-blue: #0000FF;
 $site-red: #FF0000;
 
+$global-font-size: 16;
+
+//GRID SETTINGS
+$max-width: 1200px; //for rows
+$gutter: 15px; //for col-*
+
 $smallBreakPoint: 0;
-$mediumBreakPoint: 40em;
-$largeBreakPoint: 64em;
-$xlargeBreakPoint: 92.50em;
+$mediumBreakPoint: 640px;
+$largeBreakPoint: 1024px;
+$xlargeBreakPoint: 1480px;

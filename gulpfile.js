@@ -56,8 +56,7 @@ gulp.task('_jsLint', function() {
 
     return gulp.src(allJs)
         .pipe(plugin.if(args.verbose, plugin.print()))
-        .pipe(plugin.plumber(function(error) {
-            plugin.util.log(plugin.util.colors.red(error.message));
+        .pipe(plugin.plumber(function() {
             this.emit('end');
         }))
         .pipe(plugin.jscs())

@@ -1,5 +1,7 @@
+@import 'global/normalize';
 @import 'global/variables';
-@import 'plugins/normalize';
-@import 'plugins/flexBoxGrid';
+@import 'global/functions';
+@import 'global/mixins';
+@import 'global/flex-grid';
 @import 'shared';
 @import 'pages';

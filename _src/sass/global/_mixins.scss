@@ -1,0 +1,73 @@
+@mixin bp($size) {
+  @if ($size == sm-only) {
+    @media screen and (min-width: em($smallBreakPoint)) and (max-width: em($mediumBreakPoint)) {  @content;  }
+  } @else if($size == md-only) {
+    @media screen and (min-width: em($mediumBreakPoint)) and (max-width: em($largeBreakPoint)) {  @content;  }
+  } @else if($size == md) {
+    @media screen and (min-width: em($mediumBreakPoint)) {  @content;  }
+  } @else if($size == lg-only) {
+    @media screen and (min-width: em($largeBreakPoint)) and (max-width: em($xlargeBreakPoint)) {  @content;  }
+  } @else if($size == lg) {
+    @media screen and (min-width: em($largeBreakPoint)) {  @content;  }
+  } @else if($size == xl) {
+    @media screen and (min-width: em($xlargeBreakPoint)) {  @content;  }
+  } @else {
+    @error "#{$size} is not a valid breakpoint";
+  }
+}
+
+//----------------------- POSITIONING -----------------------//
+
+@mixin position($position, $args) {
+  position: $position;
+
+  @each $o in top right bottom left {
+    $i: index($args, $o);
+
+    @if $i and $i + 1 <= length($args) and type-of(nth($args, $i + 1)) == number  {
+      $val: nth($args, $i + 1);
+
+      @if (unit($val) != '%' and $val != 0) {
+        $val: rem($val);
+      }
+
+      #{$o}: $val;
+    }
+  }
+}
+
+@mixin absolute($args) {
+  @include position(absolute, $args); }
+
+@mixin fixed($args) {
+  @include position(fixed, $args);  }
+
+@mixin relative($args) {
+  @include position(relative, $args);  }
+
+//----------------------- SHAPES -----------------------//
+
+@mixin triangle($width, $height, $color, $direction) {
+  $width: rem($width / 2);
+  $color-border-style: rem($height + .5) solid $color;
+  $transparent-border-style: $width solid transparent;
+  height: 0;
+  width: 0;
+  @if $direction == up {
+    border-right: $transparent-border-style;
+    border-bottom: $color-border-style;
+    border-left: $transparent-border-style;
+  } @else if $direction == right {
+    border-top: $transparent-border-style;
+    border-bottom: $transparent-border-style;
+    border-left: $color-border-style;
+  } @else if $direction == down {
+    border-top: $color-border-style;
+    border-right: $transparent-border-style;
+    border-left: $transparent-border-style;
+  } @else if $direction == left {
+    border-top: $transparent-border-style;
+    border-right: $color-border-style;
+    border-bottom: $transparent-border-style;
+  }
+}
