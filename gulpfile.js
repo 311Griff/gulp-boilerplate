@@ -4,7 +4,6 @@ var gulp = require('gulp');
 var plugin = require('gulp-load-plugins')({lazy: true});
 var config = require('./config')();
 var path = require('path');
-var fs = require('fs');
 
 var args = require('yargs').argv;
 var browserSync = require('browser-sync');
@@ -31,23 +30,6 @@ gulp.task('_sassLint', function() {
 });
 
 gulp.task('_sass', function() {
-
-    var mainFile = './_src/sass/_pages.scss';
-    var text = '';
-
-    fs.writeFile(mainFile, '');
-
-    fs.readdir(config.root + '/_src/sass/page', function(err, files) {
-        if (err) {
-            plugin.util.log(plugin.util.colors.red(err));
-        }
-
-        files.forEach(function(file) {
-            text = '@import \'page/' + file.replace('.scss', '') + '\';\n';
-
-            fs.appendFile(mainFile, text);
-        });
-    });
 
     return gulp.src(config.sass)
         .pipe(plugin.if(args.verbose, plugin.print()))
