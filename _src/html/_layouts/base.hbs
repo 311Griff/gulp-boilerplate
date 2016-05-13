@@ -1,0 +1,51 @@
+<html>
+<head>
+{{#block "meta"}}
+    {{> meta}}
+{{/block}}
+
+{{#block "title"}}
+    {{#if title}}
+    <title>{{title}}</title>
+    {{else}}
+        {{#if site.title}}
+    <title>{{site.title}}</title>
+        {{/if}}
+    {{/if}}
+{{/block}}
+
+    <link rel="shortcut icon" href="/images/favicon.png">
+
+{{#block "styles"}}
+    {{#if css}}
+    <link rel="stylesheet" type="text/css" href="{{css}}">
+    {{/if}}
+    <link rel="stylesheet" type="text/css" href="/css/site.css">
+{{/block}}
+
+</head>
+<body class="{{body}}" data-role="page" id="{{#if id}}{{id}}{{else}}{{body}}{{/if}}Page">
+    {{#block "header"}}
+    {{> header}}
+    {{/block}}
+
+    <main>
+    {{#block "content"}}
+    {{/block}}
+    </main>
+
+    {{#block "footer"}}
+    {{> footer }}
+    {{/block}}
+
+    {{#block "scripts"}}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    {{#if js}}
+    <script src="{{js}}"></script>
+    {{/if}}
+    <script src="/js/common.js"></script>
+    <script src="/js/site.js"></script>
+    {{/block}}
+
+</body>
+</html>

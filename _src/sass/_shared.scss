@@ -1,0 +1,22 @@
+.border {
+  border: solid 1px $site-red;
+}
+
+.border2 {
+  border: solid 1px $site-blue;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.row {
+  background-color: silver;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.col-medium-2 {
+  margin: 10px 0;
+  background-color: aliceblue;
+}
