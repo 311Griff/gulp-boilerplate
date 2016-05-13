@@ -54,7 +54,7 @@ gulp.task('_sass', function() {
         .pipe(plugin.autoprefixer({browsers: config.autoPrefixBrowsers}))
         .pipe(plugin.mergeMediaQueries())
         .pipe(plugin.if(args.build, plugin.csso()))
-        .pipe(gulp.dest(config.root + '/css'))
+        .pipe(gulp.dest(config.output.css))
         .pipe(plugin.if(browserSync.active, browserSync.reload({stream: true})));
 });
 
@@ -90,8 +90,9 @@ gulp.task('_js', function() {
         }))
         .pipe(webpack(require('./webpack.js')))
         .pipe(plugin.if(args.build, plugin.stripDebug()))
+        .pipe(plugin.if(args.build, plugin.stripComments()))
         .pipe(plugin.if(args.build, plugin.uglify()))
-        .pipe(gulp.dest(config.root + '/js'))
+        .pipe(gulp.dest(config.output.js))
         .pipe(plugin.if(browserSync.active, browserSync.reload({stream: true})));
 });
 
@@ -109,15 +110,16 @@ gulp.task('_html', function() {
             property: 'data'
         }))
         .pipe(plugin.hb(config.handlebars))
+        .pipe(plugin.if(args.build, plugin.stripComments()))
         .pipe(plugin.specialHtml())
         .pipe(plugin.if(args.build, plugin.htmlmin(config.htmlmin)))
-        .pipe(gulp.dest(config.root + '/pages'))
+        .pipe(gulp.dest(config.output.html))
         .pipe(plugin.if(browserSync.active, browserSync.reload({stream: true})));
 });
 
 gulp.task('_fonts', function() {
     return gulp.src(config.fonts)
-        .pipe(gulp.dest(config.root + '/fonts'));
+        .pipe(gulp.dest(config.output.fonts));
 });
 
 gulp.task('_images', function() {
@@ -132,7 +134,7 @@ gulp.task('_images', function() {
             svgoPlugins: [{removeViewBox: false}],
             use: [pngquant()]
         })))
-        .pipe(gulp.dest(config.root + '/images'));
+        .pipe(gulp.dest(config.output.images));
 });
 
 gulp.task('_watch', function() {
@@ -178,7 +180,7 @@ gulp.task('_sync', function() {
         port: 1337,
         xip: true,
         proxy: {
-            target: 'loc.boilerplate.com'
+            target: config.url
             //make sure the vhost exist in apache and locally routed at /etc/hosts 127.0.0.1
         }
     };

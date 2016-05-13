@@ -51,11 +51,19 @@ module.exports = function() {
             root + '/_src/scripts/**/*.js'
         ],
         json: root + '/_src/html/_data/**/*.json',
+        output: {
+            css: root + '/css',
+            fonts: root + '/fonts',
+            images: root + '/images',
+            js: root + '/js',
+            html: root + '/pages'
+        },
         root: root,
         sass: root + '/_src/sass/site.scss',
         sassAll: [
             root + '/_src/sass/*.scss',
             root + '/_src/sass/page/*.scss'
-        ]
+        ],
+        url: 'loc.boilerplate.com'
     };
 };
