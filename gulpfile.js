@@ -19,10 +19,15 @@ gulp.task('_sassLint', function() {
     args.lintSass = (args.lintFile) ? args.lintFile : config.sassAll;
 
     return gulp.src(args.lintSass)
+        .pipe(plugin.plumber(function() {
+            this.emit('end');
+        }))
         .pipe(plugin.scssLint({
-            'config': './.scss-lint.yml',
-            'maxBuffer': 300 * 2048
-        }));
+            config: './.scss-lint.yml',
+            maxBuffer: 300 * 2048,
+            customReport: plugin.scssLintStylish
+        }))
+        .pipe(plugin.scssLint.failReporter());
 });
 
 gulp.task('_sass', function() {
@@ -204,7 +209,7 @@ gulp.task('build', function(cb) {
     args.build = true;
     args.verbose = false;
 
-    return plugin.sequence('_sassLint', '_sass', '_jsLint', '_js', '_html', '_fonts', '_images', '_watch', '_sync', cb);
+    return plugin.sequence('_sass', '_js', '_html', '_fonts', '_images', '_watch', '_sync', cb);
 });
 
 gulp.task('dev', function(cb) {
