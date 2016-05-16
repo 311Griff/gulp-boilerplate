@@ -6,7 +6,6 @@ module.exports = {
 function init() {
     return [
         'example',
-        'home',
-        'test'
+        'home'
     ];
 }

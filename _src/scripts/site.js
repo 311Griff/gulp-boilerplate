@@ -1,9 +1,12 @@
 'use strict';
 
+//Uncomment all utilities you need from the JAN library. jan.core is required for all modules
+require('./plugins/jan.core');
+
 //Initialize JS that runs on all/multiple pages
 require('./shared.js').init();
 
-//add js that pertains to html page
+//Initialize JS that executes on a per page basis
 var pagesArray = require('./pages.js').init();
 
 var pages = {};
@@ -16,4 +19,4 @@ for (var i = 0; i < pagesArray.length; i++) {
     }
 }
 
-console.debug(Utils.bp());
+console.debug(JAN.utils.helper());

@@ -5,5 +5,4 @@ module.exports = {
 };
 
 function init() {
-    console.log('Shared JS');
 }
