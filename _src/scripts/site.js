@@ -4,9 +4,7 @@
 require('./shared.js').init();
 
 //add js that pertains to html page
-var pagesArray = [
-    'home'
-];
+var pagesArray = require('./pages.js').init();
 
 var pages = {};
 
@@ -15,7 +13,6 @@ for (var i = 0; i < pagesArray.length; i++) {
 
     if (document.body.id === pagesArray[i] + 'Page') {
         pages[pagesArray[i]].init();
-        //require('./pages/' + pagesArray[i] + '.js').init();
     }
 }
 

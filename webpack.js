@@ -8,12 +8,14 @@ module.exports = {
     entry: {
         site: root + '/_src/scripts/site.js'
     },
+    /*
     externals: {
         $: 'jQuery',
         jquery: 'jQuery',
         jQuery: 'jQuery',
         'window.jQuery': 'jQuery'
     },
+    */
     output: {
         filename: '[name].js'
     },

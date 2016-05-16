@@ -4,7 +4,7 @@ var gulp = require('gulp');
 var plugin = require('gulp-load-plugins')({lazy: true});
 var config = require('./config')();
 var path = require('path');
-
+var fs = require('fs');
 var args = require('yargs').argv;
 var browserSync = require('browser-sync');
 var del = require('del');
@@ -30,6 +30,14 @@ gulp.task('_sassLint', function() {
 });
 
 gulp.task('_sass', function() {
+
+    fs.readdir(config.root + '/_src/sass/page', function(err, files) {
+        if (err) {
+            plugin.util.log(plugin.util.colors.red(err));
+        }
+
+        fs.writeFile('./_src/sass/_pages.scss', formatSassFiles(files));
+    });
 
     return gulp.src(config.sass)
         .pipe(plugin.if(args.verbose, plugin.print()))
@@ -68,6 +76,25 @@ gulp.task('_jsLint', function() {
 });
 
 gulp.task('_js', function() {
+
+    fs.readdir(config.root + '/_src/scripts/page', function(err, files) {
+        if (err) {
+            plugin.util.log(plugin.util.colors.red(err));
+        }
+
+        fs.writeFile('./_src/scripts/pages.js', '\'use strict\';\r\n' +
+            '' +
+            'module.exports = {\r\n' +
+            '    init: init\r\n' +
+            '};\r\n' +
+            '\r\n' +
+            'function init() {\r\n' +
+            '    return [\r\n' +
+            formatJsFiles(files) + '\r\n' +
+            '    ];\r\n' +
+            '}\r\n');
+    });
+
     return gulp.src(config.js)
         .pipe(plugin.if(args.verbose, plugin.print()))
         .pipe(plugin.plumber(function(error) {
@@ -211,4 +238,28 @@ function getJSON(file) {
 
 function changeEvent(event) {
     plugin.util.log(plugin.util.colors.blue('File ' + path.basename(event.path) + ' changed'));
+}
+
+function formatJsFiles(files) {
+    var text = '';
+
+    for (var i in files) {
+        if (files.hasOwnProperty(i)) {
+            text += '        \'' + files[i].replace('.js', '') + '\',\r\n';
+        }
+    }
+
+    return text.replace(/,\s*$/, '');
+}
+
+function formatSassFiles(files) {
+    var text = '';
+
+    for (var i in files) {
+        if (files.hasOwnProperty(i)) {
+            text += '@import \'page/' + files[i].replace('.scss', '') + '\';\r\n';
+        }
+    }
+
+    return text.replace(/,\s*$/, '');
 }

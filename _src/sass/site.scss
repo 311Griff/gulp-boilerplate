@@ -1,7 +1,10 @@
-@import 'global/normalize';
-@import 'global/variables';
-@import 'global/functions';
-@import 'global/mixins';
-@import 'global/flex-grid';
+@import 'plugins/normalize';
+@import 'plugins/unslider';
+
+@import 'core/variables';
+@import 'core/functions';
+@import 'core/mixins';
+@import 'core/flex-grid';
+
 @import 'shared';
 @import 'pages';

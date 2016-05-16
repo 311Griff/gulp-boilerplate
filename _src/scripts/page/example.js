@@ -5,5 +5,5 @@ module.exports = {
 };
 
 function init() {
-    console.log('Shared JS');
+    console.log('Example Page');
 }

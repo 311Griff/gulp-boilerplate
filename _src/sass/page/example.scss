@@ -1,0 +1,32 @@
+.example {
+  background-color: $site-white;
+
+  .demo {
+    position: relative;
+    margin: rem(5) auto;
+    padding: rem(10);
+    background-color: $site-dark;
+
+    @include bp(md) {
+      width: 80%;
+    }
+  }
+
+  .demo-slider {
+    padding: rem(10) 0;
+  }
+
+  .demo-usage {
+    margin: rem(5) auto;
+    padding: rem(10);
+    background-color: $site-blue;
+
+    @include bp(md) {
+      width: 80%;
+    }
+  }
+
+  .unslider {
+    margin: rem(15) 0;
+  }
+}
