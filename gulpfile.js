@@ -5,6 +5,7 @@ var plugin = require('gulp-load-plugins')({lazy: true});
 var config = require('./config')();
 var path = require('path');
 var fs = require('fs');
+var Promise = require('promise');
 
 var args = require('yargs').argv;
 var browserSync = require('browser-sync');
@@ -19,43 +20,55 @@ gulp.task('_sassLint', function() {
     args.lintSass = (args.lintFile) ? args.lintFile : config.sassAll;
 
     return gulp.src(args.lintSass)
+        .pipe(plugin.plumber(function() {
+            this.emit('end');
+        }))
         .pipe(plugin.scssLint({
-            'config': './.scss-lint.yml',
-            'maxBuffer': 300 * 2048
-        }));
+            config: './.scss-lint.yml',
+            maxBuffer: 300 * 2048,
+            customReport: plugin.scssLintStylish
+        }))
+        .pipe(plugin.scssLint.failReporter());
 });
 
 gulp.task('_sass', function() {
 
-    var mainFile = './_src/sass/_pages.scss';
-    var text = '';
-
-    fs.writeFile(mainFile, '');
-
-    fs.readdir(config.root + '/_src/sass/page', function(err, files) {
-        if (err) {
-            plugin.util.log(plugin.util.colors.red(err));
-        }
-
-        files.forEach(function(file) {
-            text = '@import \'page/' + file.replace('.scss', '') + '\';\n';
-
-            fs.appendFile(mainFile, text);
+    var promise = new Promise(function(resolve, reject) {
+        fs.readdir(config.root + '/_src/sass/page', function(error, files) {
+            if (error) {
+                reject(error);
+            } else {
+                fs.writeFile('./_src/sass/_pages.scss', formatSassFiles(files), function(error, data) {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(data);
+                    }
+                });
+            }
         });
     });
 
-    return gulp.src(config.sass)
-        .pipe(plugin.if(args.verbose, plugin.print()))
-        .pipe(plugin.plumber(function(error) {
-            plugin.util.log(plugin.util.colors.red(error.message));
-            this.emit('end');
-        }))
-        .pipe(plugin.sass())
-        .pipe(plugin.autoprefixer({browsers: config.autoPrefixBrowsers}))
-        .pipe(plugin.mergeMediaQueries())
-        .pipe(plugin.if(args.build, plugin.csso()))
-        .pipe(gulp.dest(config.root + '/css'))
-        .pipe(plugin.if(browserSync.active, browserSync.reload({stream: true})));
+    promise.then(function() {
+        var imagePath = 'http://hsi.clcdn.net/images/';
+        var localPath = '/_src/images/';
+
+        return gulp.src(config.sass)
+            .pipe(plugin.if(args.verbose, plugin.print()))
+            .pipe(plugin.plumber(function(error) {
+                plugin.util.log(plugin.util.colors.red(error.message));
+                this.emit('end');
+            }))
+            .pipe(plugin.sass())
+            .pipe(plugin.autoprefixer({browsers: config.autoPrefixBrowsers}))
+            .pipe(plugin.mergeMediaQueries())
+            .pipe(plugin.if(args.build, plugin.replace(localPath, imagePath)))
+            .pipe(plugin.if(args.build, plugin.csso()))
+            .pipe(plugin.if(args.cdn, gulp.dest(config.cdn.css), gulp.dest(config.output.css)))
+            .pipe(plugin.if(browserSync.active, browserSync.reload({stream: true})));
+    }, function(error) {
+        plugin.util.log(plugin.util.colors.red('_sass Failed: ' + error));
+    });
 });
 
 gulp.task('_jsLint', function() {
@@ -69,8 +82,7 @@ gulp.task('_jsLint', function() {
 
     return gulp.src(allJs)
         .pipe(plugin.if(args.verbose, plugin.print()))
-        .pipe(plugin.plumber(function(error) {
-            plugin.util.log(plugin.util.colors.red(error.message));
+        .pipe(plugin.plumber(function() {
             this.emit('end');
         }))
         .pipe(plugin.jscs())
@@ -82,17 +94,50 @@ gulp.task('_jsLint', function() {
 });
 
 gulp.task('_js', function() {
-    return gulp.src(config.js)
-        .pipe(plugin.if(args.verbose, plugin.print()))
-        .pipe(plugin.plumber(function(error) {
-            plugin.util.log(plugin.util.colors.red(error.message));
-            this.emit('end');
-        }))
-        .pipe(webpack(require('./webpack.js')))
-        .pipe(plugin.if(args.build, plugin.stripDebug()))
-        .pipe(plugin.if(args.build, plugin.uglify()))
-        .pipe(gulp.dest(config.root + '/js'))
-        .pipe(plugin.if(browserSync.active, browserSync.reload({stream: true})));
+
+    var promise = new Promise(function(resolve, reject) {
+        fs.readdir(config.root + '/_src/scripts/page', function(error, files) {
+            if (error) {
+                reject(error);
+            } else {
+                fs.writeFile('./_src/scripts/pages.js', '\'use strict\';\r\n' +
+                    '' +
+                    'module.exports = {\r\n' +
+                    '    init: init\r\n' +
+                    '};\r\n' +
+                    '\r\n' +
+                    'function init() {\r\n' +
+                    '    return [\r\n' +
+                    formatJsFiles(files) + '\r\n' +
+                    '    ];\r\n' +
+                    '}\r\n',
+                    function(error, data) {
+                        if (error) {
+                            reject(error);
+                        } else {
+                            resolve(data);
+                        }
+                    });
+            }
+        });
+    });
+
+    promise.then(function() {
+        return gulp.src(config.js)
+            .pipe(plugin.if(args.verbose, plugin.print()))
+            .pipe(plugin.plumber(function(error) {
+                plugin.util.log(plugin.util.colors.red(error));
+                this.emit('end');
+            }))
+            .pipe(webpack(require('./webpack.js')))
+            .pipe(plugin.if(args.build, plugin.stripDebug()))
+            .pipe(plugin.if(args.build, plugin.stripComments()))
+            .pipe(plugin.if(args.build, plugin.uglify()))
+            .pipe(plugin.if(args.cdn, gulp.dest(config.cdn.js), gulp.dest(config.output.js)))
+            .pipe(plugin.if(browserSync.active, browserSync.reload({stream: true})));
+    }, function(error) {
+        plugin.util.log(plugin.util.colors.red('_js Failed: ' + error));
+    });
 });
 
 gulp.task('_html', function() {
@@ -109,15 +154,16 @@ gulp.task('_html', function() {
             property: 'data'
         }))
         .pipe(plugin.hb(config.handlebars))
+        .pipe(plugin.if(args.build, plugin.stripComments()))
         .pipe(plugin.specialHtml())
         .pipe(plugin.if(args.build, plugin.htmlmin(config.htmlmin)))
-        .pipe(gulp.dest(config.root + '/pages'))
+        .pipe(gulp.dest(config.output.html))
         .pipe(plugin.if(browserSync.active, browserSync.reload({stream: true})));
 });
 
 gulp.task('_fonts', function() {
     return gulp.src(config.fonts)
-        .pipe(gulp.dest(config.root + '/fonts'));
+        .pipe(gulp.dest(config.output.fonts));
 });
 
 gulp.task('_images', function() {
@@ -132,7 +178,7 @@ gulp.task('_images', function() {
             svgoPlugins: [{removeViewBox: false}],
             use: [pngquant()]
         })))
-        .pipe(gulp.dest(config.root + '/images'));
+        .pipe(gulp.dest(config.output.images));
 });
 
 gulp.task('_watch', function() {
@@ -178,7 +224,7 @@ gulp.task('_sync', function() {
         port: 1337,
         xip: true,
         proxy: {
-            target: 'loc.boilerplate.com'
+            target: config.url
             //make sure the vhost exist in apache and locally routed at /etc/hosts 127.0.0.1
         }
     };
@@ -202,7 +248,7 @@ gulp.task('build', function(cb) {
     args.build = true;
     args.verbose = false;
 
-    return plugin.sequence('_sassLint', '_sass', '_jsLint', '_js', '_html', '_fonts', '_images', '_watch', '_sync', cb);
+    return plugin.sequence('_sass', '_js', '_html', '_fonts', '_images', '_watch', '_sync', cb);
 });
 
 gulp.task('dev', function(cb) {
@@ -223,4 +269,28 @@ function getJSON(file) {
 
 function changeEvent(event) {
     plugin.util.log(plugin.util.colors.blue('File ' + path.basename(event.path) + ' changed'));
+}
+
+function formatJsFiles(files) {
+    var text = '';
+
+    for (var i in files) {
+        if (files.hasOwnProperty(i)) {
+            text += '        \'' + files[i].replace('.js', '') + '\',\r\n';
+        }
+    }
+
+    return text.replace(/,\s*$/, '');
+}
+
+function formatSassFiles(files) {
+    var text = '';
+
+    for (var i in files) {
+        if (files.hasOwnProperty(i)) {
+            text += '@import \'page/' + files[i].replace('.scss', '') + '\';\r\n';
+        }
+    }
+
+    return text.replace(/,\s*$/, '');
 }

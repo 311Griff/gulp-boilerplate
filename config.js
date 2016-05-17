@@ -8,10 +8,14 @@ module.exports = function() {
     return {
         autoPrefixBrowsers: [
             'last 2 versions',
+            '> 5% in US',
             'ie >= 11',
+            'edge >= 13',
             'and_chr >= 4.4',
-            'ios_saf >= 8.0',
-            'safari >= 8.0'
+            'ios_saf >= 8.4',
+            'safari >= 9',
+            'firefox >= 46',
+            'chrome >= 50'
         ],
         fonts: root + '/_src/fonts/**/*.*',
         handlebars: {
@@ -20,7 +24,7 @@ module.exports = function() {
             data: root + '/_src/html/_data/**/*.{js,json}',
             helpers: [
                 './node_modules/handlebars-layouts',
-                root + '/_src/scripts/plugins/Helpers.js'
+                root + '/helpers.js'
             ],
             partials: [
                 root + '/_src/html/_partials/**/*.hbs',
@@ -51,11 +55,19 @@ module.exports = function() {
             root + '/_src/scripts/**/*.js'
         ],
         json: root + '/_src/html/_data/**/*.json',
+        output: {
+            css: root + '/css',
+            fonts: root + '/fonts',
+            images: root + '/images',
+            js: root + '/js',
+            html: root + '/pages'
+        },
         root: root,
         sass: root + '/_src/sass/site.scss',
         sassAll: [
             root + '/_src/sass/*.scss',
             root + '/_src/sass/page/*.scss'
-        ]
+        ],
+        url: 'loc.boilerplate.com'
     };
 };
