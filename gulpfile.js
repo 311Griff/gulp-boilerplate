@@ -5,6 +5,8 @@ var plugin = require('gulp-load-plugins')({lazy: true});
 var config = require('./config')();
 var path = require('path');
 var fs = require('fs');
+var Promise = require('promise');
+
 var args = require('yargs').argv;
 var browserSync = require('browser-sync');
 var del = require('del');
@@ -31,26 +33,42 @@ gulp.task('_sassLint', function() {
 
 gulp.task('_sass', function() {
 
-    fs.readdir(config.root + '/_src/sass/page', function(err, files) {
-        if (err) {
-            plugin.util.log(plugin.util.colors.red(err));
-        }
-
-        fs.writeFile('./_src/sass/_pages.scss', formatSassFiles(files));
+    var promise = new Promise(function(resolve, reject) {
+        fs.readdir(config.root + '/_src/sass/page', function(error, files) {
+            if (error) {
+                reject(error);
+            } else {
+                fs.writeFile('./_src/sass/_pages.scss', formatSassFiles(files), function(error, data) {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(data);
+                    }
+                });
+            }
+        });
     });
 
-    return gulp.src(config.sass)
-        .pipe(plugin.if(args.verbose, plugin.print()))
-        .pipe(plugin.plumber(function(error) {
-            plugin.util.log(plugin.util.colors.red(error.message));
-            this.emit('end');
-        }))
-        .pipe(plugin.sass())
-        .pipe(plugin.autoprefixer({browsers: config.autoPrefixBrowsers}))
-        .pipe(plugin.mergeMediaQueries())
-        .pipe(plugin.if(args.build, plugin.csso()))
-        .pipe(gulp.dest(config.output.css))
-        .pipe(plugin.if(browserSync.active, browserSync.reload({stream: true})));
+    promise.then(function() {
+        var imagePath = 'http://hsi.clcdn.net/images/';
+        var localPath = '/_src/images/';
+
+        return gulp.src(config.sass)
+            .pipe(plugin.if(args.verbose, plugin.print()))
+            .pipe(plugin.plumber(function(error) {
+                plugin.util.log(plugin.util.colors.red(error.message));
+                this.emit('end');
+            }))
+            .pipe(plugin.sass())
+            .pipe(plugin.autoprefixer({browsers: config.autoPrefixBrowsers}))
+            .pipe(plugin.mergeMediaQueries())
+            .pipe(plugin.if(args.build, plugin.replace(localPath, imagePath)))
+            .pipe(plugin.if(args.build, plugin.csso()))
+            .pipe(plugin.if(args.cdn, gulp.dest(config.cdn.css), gulp.dest(config.output.css)))
+            .pipe(plugin.if(browserSync.active, browserSync.reload({stream: true})));
+    }, function(error) {
+        plugin.util.log(plugin.util.colors.red('_sass Failed: ' + error));
+    });
 });
 
 gulp.task('_jsLint', function() {
@@ -77,36 +95,49 @@ gulp.task('_jsLint', function() {
 
 gulp.task('_js', function() {
 
-    fs.readdir(config.root + '/_src/scripts/page', function(err, files) {
-        if (err) {
-            plugin.util.log(plugin.util.colors.red(err));
-        }
-
-        fs.writeFile('./_src/scripts/pages.js', '\'use strict\';\r\n' +
-            '' +
-            'module.exports = {\r\n' +
-            '    init: init\r\n' +
-            '};\r\n' +
-            '\r\n' +
-            'function init() {\r\n' +
-            '    return [\r\n' +
-            formatJsFiles(files) + '\r\n' +
-            '    ];\r\n' +
-            '}\r\n');
+    var promise = new Promise(function(resolve, reject) {
+        fs.readdir(config.root + '/_src/scripts/page', function(error, files) {
+            if (error) {
+                reject(error);
+            } else {
+                fs.writeFile('./_src/scripts/pages.js', '\'use strict\';\r\n' +
+                    '' +
+                    'module.exports = {\r\n' +
+                    '    init: init\r\n' +
+                    '};\r\n' +
+                    '\r\n' +
+                    'function init() {\r\n' +
+                    '    return [\r\n' +
+                    formatJsFiles(files) + '\r\n' +
+                    '    ];\r\n' +
+                    '}\r\n',
+                    function(error, data) {
+                        if (error) {
+                            reject(error);
+                        } else {
+                            resolve(data);
+                        }
+                    });
+            }
+        });
     });
 
-    return gulp.src(config.js)
-        .pipe(plugin.if(args.verbose, plugin.print()))
-        .pipe(plugin.plumber(function(error) {
-            plugin.util.log(plugin.util.colors.red(error.message));
-            this.emit('end');
-        }))
-        .pipe(webpack(require('./webpack.js')))
-        .pipe(plugin.if(args.build, plugin.stripDebug()))
-        .pipe(plugin.if(args.build, plugin.stripComments()))
-        .pipe(plugin.if(args.build, plugin.uglify()))
-        .pipe(gulp.dest(config.output.js))
-        .pipe(plugin.if(browserSync.active, browserSync.reload({stream: true})));
+    promise.then(function() {
+        return gulp.src(config.js)
+            .pipe(plugin.if(args.verbose, plugin.print()))
+            .pipe(plugin.plumber(function(error) {
+                plugin.util.log(plugin.util.colors.red(error));
+                this.emit('end');
+            }))
+            .pipe(webpack(require('./webpack.js')))
+            .pipe(plugin.if(args.build, plugin.stripDebug()))
+            .pipe(plugin.if(args.build, plugin.stripComments()))
+            .pipe(plugin.if(args.build, plugin.uglify()))
+            .pipe(plugin.if(args.cdn, gulp.dest(config.cdn.js), gulp.dest(config.output.js)))
+            .pipe(plugin.if(browserSync.active, browserSync.reload({stream: true})));
+    }, function(error) {
+        plugin.util.log(plugin.util.colors.red('_js Failed: ' + error));
+    });
 });
 
 gulp.task('_html', function() {

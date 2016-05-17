@@ -1,7 +1,7 @@
 'use strict';
 
-//Uncomment all utilities you need from the JAN library. jan.core is required for all modules
-require('./plugins/jan.core');
+//Uncomment all modules you need from the CL library
+require('./plugins/cl.utils');
 
 //Initialize JS that runs on all/multiple pages
 require('./shared.js').init();
@@ -19,4 +19,4 @@ for (var i = 0; i < pagesArray.length; i++) {
     }
 }
 
-console.debug(JAN.utils.helper());
+console.debug(CL.utils.hud());
