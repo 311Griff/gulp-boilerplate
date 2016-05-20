@@ -2,7 +2,7 @@
 
 var gulp = require('gulp');
 var plugin = require('gulp-load-plugins')({lazy: true});
-var config = require('./config')();
+var config = require('./gulp.config')();
 var path = require('path');
 var fs = require('fs');
 var Promise = require('promise');
@@ -130,7 +130,7 @@ gulp.task('_js', function() {
                 plugin.util.log(plugin.util.colors.red(error));
                 this.emit('end');
             }))
-            .pipe(webpack(require('./webpack.js')))
+            .pipe(webpack(require('./webpack.config.js')))
             .pipe(plugin.if(args.build, plugin.babel({
                 presets: ['es2015']
             })))
