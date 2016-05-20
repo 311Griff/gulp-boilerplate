@@ -22,7 +22,7 @@ module.exports = function() {
             data: root + '/_src/html/_data/**/*.{js,json}',
             helpers: [
                 './node_modules/handlebars-layouts',
-                root + '/_src/scripts/plugins/Helpers.js'
+                './helpers.js'
             ],
             partials: [
                 root + '/_src/html/_partials/**/*.hbs',
