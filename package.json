@@ -7,10 +7,10 @@
     "type": "git",
     "url": "git+ssh://git@github.com/theblackbolt/project.git"
   },
-  "author": "theblackbolt <roberto.hernandez@clearlink.com>",
+  "author": "theblackbolt",
   "main": "n/a",
   "scripts": {
-    "start": "gem install scss_lint"
+    "once": "gem install scss_lint"
   },
   "dependencies": {},
   "devDependencies": {
