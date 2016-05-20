@@ -25,27 +25,27 @@
 
 </head>
 <body class="{{body}}" data-role="page" id="{{#if id}}{{id}}{{else}}{{body}}{{/if}}Page">
-    {{#block "header"}}
+{{#block "header"}}
     {{> header}}
-    {{/block}}
+{{/block}}
 
     <main>
-    {{#block "content"}}
-    {{/block}}
+{{#block "content"}}
+{{/block}}
     </main>
 
-    {{#block "footer"}}
+{{#block "footer"}}
     {{> footer }}
-    {{/block}}
+{{/block}}
 
-    {{#block "scripts"}}
-    <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>-->
+{{#block "scripts"}}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     {{#if js}}
     <script src="{{js}}"></script>
     {{/if}}
     <script src="/js/common.js"></script>
     <script src="/js/site.js"></script>
-    {{/block}}
+{{/block}}
 
 </body>
 </html>

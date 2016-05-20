@@ -1,7 +1,33 @@
 //css that is shared across the entire website goes here
 
-a {
-  color: $site-blue;
-  font-weight: bold;
-  text-decoration: none;
+body {
+  background-color: $site-white;
+
+  @include bp(small-only) {
+    color: $site-black;
+  }
+
+  @include bp(medium) {
+    background-color: darken($site-white, 5);
+  }
+
+  @include bp(medium-only) {
+    color: lighten($site-black, 5);
+  }
+
+  @include bp(large) {
+    background-color: darken($site-white, 10);
+  }
+
+  @include bp(large-only) {
+    color: lighten($site-black, 10);
+  }
+
+  @include bp(xlarge) {
+    background-color: darken($site-white, 15);
+  }
+
+  @include bp(xlarge-only) {
+    color: lighten($site-black, 15);
+  }
 }

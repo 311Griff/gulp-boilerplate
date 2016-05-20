@@ -59,7 +59,7 @@
 
     "globals": {
         "angular": false,
-        "Foundation": false
+        "Foundation": true
     },
 
     "predef": [
@@ -76,8 +76,7 @@
         "inject",
         "expect",
         "spyOn",
-        "Utils",
-        "Awesomplete",
+        "utils",
         "L"
     ]
 }

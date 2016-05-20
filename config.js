@@ -2,20 +2,18 @@
 
 var path = require('path');
 var root = path.resolve(process.cwd());
+var cdn = process.env.HOME + '/sites/cms-media/trunk/cdn/boilerplate/';
+var url = 'loc.boilerplate.com';
 
 module.exports = function() {
 
     return {
         autoPrefixBrowsers: [
             'last 2 versions',
-            '> 5% in US',
             'ie >= 11',
-            'edge >= 13',
             'and_chr >= 4.4',
-            'ios_saf >= 8.4',
-            'safari >= 9',
-            'firefox >= 46',
-            'chrome >= 50'
+            'ios_saf >= 8.0',
+            'safari >= 8.0'
         ],
         fonts: root + '/_src/fonts/**/*.*',
         handlebars: {
@@ -24,7 +22,7 @@ module.exports = function() {
             data: root + '/_src/html/_data/**/*.{js,json}',
             helpers: [
                 './node_modules/handlebars-layouts',
-                root + '/helpers.js'
+                root + '/_src/scripts/plugins/Helpers.js'
             ],
             partials: [
                 root + '/_src/html/_partials/**/*.hbs',
@@ -44,13 +42,17 @@ module.exports = function() {
         htmlmin: {
             removeComments: true,
             collapseWhitespace: true,
-            removeScriptTypeAttributes: true,
-            removeStyleLinkTypeAttributes: true
+            removeScriptTypeAttributes: false,
+            removeStyleLinkTypeAttributes: false
         },
-        images: root + '/_src/images/**/*.*',
+        images: [
+            root + '/_src/images/**/*.*',
+            '!' + root + '/_src/images/logos/**/*.*'
+        ],
         js: root + '/_src/scripts/site.js',
         jsAll: [
             '!./node_modules/**/*.js',
+            '!' + root + '/_src/scripts/pages.js',
             './*.js',
             root + '/_src/scripts/**/*.js'
         ],
@@ -62,12 +64,19 @@ module.exports = function() {
             js: root + '/js',
             html: root + '/pages'
         },
+        cdn: {
+            css: cdn + '/css',
+            fonts: cdn + '/fonts',
+            images: cdn + '/images',
+            js: cdn + '/js',
+            html: cdn + '/pages'
+        },
         root: root,
         sass: root + '/_src/sass/site.scss',
         sassAll: [
             root + '/_src/sass/*.scss',
             root + '/_src/sass/page/*.scss'
         ],
-        url: 'loc.boilerplate.com'
+        url: url
     };
 };

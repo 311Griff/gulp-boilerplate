@@ -1,7 +1,8 @@
 'use strict';
 
-//Uncomment all modules you need from the CL library
-require('./plugins/cl.utils');
+//  Zurb Foundation 6.2.1 https://github.com/zurb/foundation-sites/tree/develop/js
+require('../../node_modules/foundation-sites/js/foundation.core');
+require('../../node_modules/foundation-sites/js/foundation.util.mediaQuery');
 
 //Initialize JS that runs on all/multiple pages
 require('./shared.js').init();
@@ -19,4 +20,4 @@ for (var i = 0; i < pagesArray.length; i++) {
     }
 }
 
-console.debug(CL.utils.hud());
+console.debug(utils.hud());

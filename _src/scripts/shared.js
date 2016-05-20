@@ -5,4 +5,5 @@ module.exports = {
 };
 
 function init() {
+    $(document).foundation();
 }

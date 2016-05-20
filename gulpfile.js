@@ -64,7 +64,8 @@ gulp.task('_sass', function() {
             .pipe(plugin.mergeMediaQueries())
             .pipe(plugin.if(args.build, plugin.replace(localPath, imagePath)))
             .pipe(plugin.if(args.build, plugin.csso()))
-            .pipe(plugin.if(args.cdn, gulp.dest(config.cdn.css), gulp.dest(config.output.css)))
+            .pipe(gulp.dest(config.output.css))
+            .pipe(plugin.if(args.build, gulp.dest(config.cdn.css)))
             .pipe(plugin.if(browserSync.active, browserSync.reload({stream: true})));
     }, function(error) {
         plugin.util.log(plugin.util.colors.red('_sass Failed: ' + error));
@@ -101,7 +102,7 @@ gulp.task('_js', function() {
                 reject(error);
             } else {
                 fs.writeFile('./_src/scripts/pages.js', '\'use strict\';\r\n' +
-                    '' +
+                    '\r\n' +
                     'module.exports = {\r\n' +
                     '    init: init\r\n' +
                     '};\r\n' +
@@ -130,10 +131,14 @@ gulp.task('_js', function() {
                 this.emit('end');
             }))
             .pipe(webpack(require('./webpack.js')))
+            .pipe(plugin.if(args.build, plugin.babel({
+                presets: ['es2015']
+            })))
             .pipe(plugin.if(args.build, plugin.stripDebug()))
             .pipe(plugin.if(args.build, plugin.stripComments()))
             .pipe(plugin.if(args.build, plugin.uglify()))
-            .pipe(plugin.if(args.cdn, gulp.dest(config.cdn.js), gulp.dest(config.output.js)))
+            .pipe(gulp.dest(config.output.js))
+            .pipe(plugin.if(args.build, gulp.dest(config.cdn.js)))
             .pipe(plugin.if(browserSync.active, browserSync.reload({stream: true})));
     }, function(error) {
         plugin.util.log(plugin.util.colors.red('_js Failed: ' + error));
@@ -154,19 +159,25 @@ gulp.task('_html', function() {
             property: 'data'
         }))
         .pipe(plugin.hb(config.handlebars))
-        .pipe(plugin.if(args.build, plugin.stripComments()))
+        //.pipe(plugin.if(args.build, plugin.stripComments())) //accidentally removes pingdom comment tag
         .pipe(plugin.specialHtml())
-        .pipe(plugin.if(args.build, plugin.htmlmin(config.htmlmin)))
+        //.pipe(plugin.if(args.build, plugin.htmlmin(config.htmlmin))) //Not working with php tags
         .pipe(gulp.dest(config.output.html))
         .pipe(plugin.if(browserSync.active, browserSync.reload({stream: true})));
 });
 
 gulp.task('_fonts', function() {
     return gulp.src(config.fonts)
-        .pipe(gulp.dest(config.output.fonts));
+        .pipe(gulp.dest(config.output.fonts))
+        .pipe(plugin.if(args.build, gulp.dest(config.cdn.fonts)));
 });
 
 gulp.task('_images', function() {
+
+    if (args.build) {
+        config.images.length = 1; //remove the ignore flag of images/logos when copying to the cdn folder
+    }
+
     return gulp.src(config.images)
         .pipe(plugin.if(args.verbose, plugin.print()))
         .pipe(plugin.plumber(function(error) {
@@ -178,7 +189,8 @@ gulp.task('_images', function() {
             svgoPlugins: [{removeViewBox: false}],
             use: [pngquant()]
         })))
-        .pipe(gulp.dest(config.output.images));
+        .pipe(gulp.dest(config.output.images))
+        .pipe(plugin.if(args.build, gulp.dest(config.cdn.images)));
 });
 
 gulp.task('_watch', function() {
@@ -222,7 +234,7 @@ gulp.task('_sync', function() {
         logPrefix: 'BrowserSync',
         open: 'external',
         port: 1337,
-        xip: true,
+        //xip: true,
         proxy: {
             target: config.url
             //make sure the vhost exist in apache and locally routed at /etc/hosts 127.0.0.1
@@ -248,7 +260,7 @@ gulp.task('build', function(cb) {
     args.build = true;
     args.verbose = false;
 
-    return plugin.sequence('_sass', '_js', '_html', '_fonts', '_images', '_watch', '_sync', cb);
+    return plugin.sequence('_sass', '_js', '_html', '_fonts', '_images', cb);
 });
 
 gulp.task('dev', function(cb) {

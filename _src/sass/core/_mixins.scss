@@ -1,16 +1,19 @@
 @mixin bp($size) {
-  @if ($size == sm-only) {
-    @media screen and (min-width: em($smallBreakPoint)) and (max-width: em($mediumBreakPoint)) {  @content;  }
-  } @else if($size == md-only) {
-    @media screen and (min-width: em($mediumBreakPoint)) and (max-width: em($largeBreakPoint)) {  @content;  }
-  } @else if($size == md) {
-    @media screen and (min-width: em($mediumBreakPoint)) {  @content;  }
-  } @else if($size == lg-only) {
-    @media screen and (min-width: em($largeBreakPoint)) and (max-width: em($xlargeBreakPoint)) {  @content;  }
-  } @else if($size == lg) {
-    @media screen and (min-width: em($largeBreakPoint)) {  @content;  }
-  } @else if($size == xl) {
-    @media screen and (min-width: em($xlargeBreakPoint)) {  @content;  }
+
+  @if ($size == small-only) {
+    @media screen and (min-width: em(map-get($breakpoints, small))) and (max-width: em(map-get($breakpoints, medium))) {  @content;  }
+  } @else if($size == medium-only) {
+    @media screen and (min-width: em(map-get($breakpoints, medium))) and (max-width: em(map-get($breakpoints, large))) {  @content;  }
+  } @else if($size == medium) {
+    @media screen and (min-width: em(map-get($breakpoints, medium))) {  @content;  }
+  } @else if($size == large-only) {
+    @media screen and (min-width: em(map-get($breakpoints, large))) and (max-width: em(map-get($breakpoints, xlarge))) {  @content;  }
+  } @else if($size == large) {
+    @media screen and (min-width: em(map-get($breakpoints, large))) {  @content;  }
+  } @else if($size == xlarge-only) {
+    @media screen and (min-width: em(map-get($breakpoints, xlarge))) and (max-width: em(map-get($breakpoints, xxlarge))) {  @content;  }
+  } @else if($size == xlarge) {
+    @media screen and (min-width: em(map-get($breakpoints, xlarge))) {  @content;  }
   } @else {
     @error "#{$size} is not a valid breakpoint";
   }
