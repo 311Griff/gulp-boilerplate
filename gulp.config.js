@@ -2,7 +2,7 @@
 
 var path = require('path');
 var root = path.resolve(process.cwd());
-var cdn = process.env.HOME + '/sites/cms-media/trunk/cdn/boilerplate/';
+var cdn = process.env.HOME + '/sites/cms-media/trunk/cdn/boilerplate';
 var url = 'loc.boilerplate.com';
 
 module.exports = function() {
