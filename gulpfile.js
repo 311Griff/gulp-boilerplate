@@ -244,7 +244,7 @@ gulp.task('_sync', function() {
     return browserSync(options);
 });
 
-gulp.task('clean', function(done) {
+gulp.task('_clean', function(done) {
     var dir = [
         './css/**/*',
         './images/**/*',
